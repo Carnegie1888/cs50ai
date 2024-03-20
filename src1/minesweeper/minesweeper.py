@@ -246,11 +246,12 @@ class MinesweeperAI():
                     continue
                 
                 if sentence1.cells.issubset(sentence2.cells):
-                    sentence2.cells -= sentence1.cells
-                    sentence2.count -= sentence1.count
+                    new_cells = sentence2.cells - sentence1.cells
+                    new_count = sentence2.count - sentence1.count
 
-                    mines = sentence2.known_mines()
-                    safes = sentence2.known_safes()
+                    new_sentence = Sentence(new_cells, new_count)
+                    mines = new_sentence.known_mines()
+                    safes = new_sentence.known_safes()
                     if mines:
                         for cell in mines:
                             self.mark_mine(cell)
