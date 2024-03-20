@@ -203,7 +203,8 @@ class MinesweeperAI():
                 if (i, j) == cell:
                     continue
 
-                cells.add((i, j))
+                if 0 <= i < self.height and 0 <= j < self.width:
+                    cells.add((i, j))
 
         for mine in self.mines:
             if mine in cells:
@@ -248,14 +249,14 @@ class MinesweeperAI():
                     sentence2.cells -= sentence1.cells
                     sentence2.count -= sentence1.count
 
-                if sentence2.known_mines():
-                    mines = copy.deepcopy(sentence2.cells)
-                    for cell in mines:
-                        self.mark_mine(cell)
-                elif sentence2.known_safes():
-                    safes = copy.deepcopy(sentence2.cells)
-                    for cell in safes:
-                        self.mark_safe(cell)
+                    mines = sentence2.known_mines()
+                    safes = sentence2.known_safes()
+                    if mines:
+                        for cell in mines:
+                            self.mark_mine(cell)
+                    elif safes:
+                        for cell in safes:
+                            self.mark_safe(cell)
 
                 
 
