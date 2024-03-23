@@ -2,6 +2,7 @@ import os
 import random
 import re
 import sys
+import copy
 
 DAMPING = 0.85
 SAMPLES = 10000
@@ -63,18 +64,18 @@ def transition_model(corpus, page, damping_factor):
     if links == 0:
         damping_factor = 1
         all = list(corpus.keys())
-        num_of_all = len(all)
+        dict_len = len(all)
 
         for next in all:
-            distribution[next] = damping_factor / num_of_all
+            distribution[next] = damping_factor / dict_len
 
         return distribution
     else:
         all = list(corpus.keys())
-        num_of_all = len(all)
+        dict_len = len(all)
 
         for next in all:
-            distribution[next] = damping_factor / num_of_all
+            distribution[next] = (1 - damping_factor) / dict_len
 
         for next in corpus[page]:
             distribution[next] += damping_factor / links
@@ -105,15 +106,15 @@ def sample_pagerank(corpus, damping_factor, n):
     pr[page] += 1
 
     for i in range(n):
-        dict = transition_model(corpus, page, damping_factor)
-        population = list(dict.keys())
-        weights = list(dict.values())
+        dist = transition_model(corpus, page, damping_factor)
+        population = list(dist.keys())
+        weights = list(dist.values())
 
         page = random.choices(population, weights, k=1)[0]
         pr[page] += 1
 
     for page in pr:
-        pr[page] = pr[page] / n
+        pr[page] /= n
 
     return pr
 
@@ -136,28 +137,21 @@ def iterate_pagerank(corpus, damping_factor):
         pr[page] = init
 
     while True:
-        out = True
+        last = pr
 
         for page in pr:
-            last = pr[page]
             pr[page] = (1 - damping_factor) / all 
             for parent, pages_set in corpus.items():
                 if page in pages_set:
                     pr[page] += damping_factor * pr[parent] / len(pages_set)
-            
-            if abs(last - pr[page]) > 0.001:
-                out = False
+                elif len(pages_set) == 0:
+                    pr[page] += pr[page] * 1 / all
 
-        if out:
+        difference = max([abs(pr[page] - last[page]) for page in pages])
+
+        if difference < 0.001:
             return pr
-
         
-
-
-    
-
-
-
 
 if __name__ == "__main__":
     main()
