@@ -63,7 +63,7 @@ def transition_model(corpus, page, damping_factor):
     if links == 0:
         damping_factor = 1
         all = list(corpus.keys())
-        num_of_all = len(corpus.values)
+        num_of_all = len(all)
 
         for next in all:
             distribution[next] = damping_factor / num_of_all
