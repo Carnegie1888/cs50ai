@@ -57,7 +57,32 @@ def transition_model(corpus, page, damping_factor):
     linked to by `page`. With probability `1 - damping_factor`, choose
     a link at random chosen from all pages in the corpus.
     """
-    raise NotImplementedError
+    distribution = {}
+    links = len(corpus[page])
+
+    if links == 0:
+        damping_factor = 1
+        all = list(corpus.keys())
+        num_of_all = len(corpus.values)
+
+        for next in all:
+            distribution[next] = damping_factor / num_of_all
+
+        return distribution
+    else:
+        all = list(corpus.keys())
+        num_of_all = len(all)
+
+        for next in all:
+            distribution[next] = damping_factor / num_of_all
+
+        for next in corpus[page]:
+            distribution[next] += damping_factor / links
+
+        return distribution
+
+
+
 
 
 def sample_pagerank(corpus, damping_factor, n):
@@ -69,8 +94,28 @@ def sample_pagerank(corpus, damping_factor, n):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    pr = {}
 
+    pages = list(corpus.keys())
+
+    for page in pages:
+        pr[page] = 0
+
+    page = random.choice(pages)
+    pr[page] += 1
+
+    for i in range(n):
+        dict = transition_model(corpus, page, damping_factor)
+        population = list(dict.keys())
+        weights = list(dict.values())
+
+        page = random.choices(population, weights, k=1)[0]
+        pr[page] += 1
+
+    for page in pr:
+        pr[page] = pr[page] / n
+
+    return pr
 
 def iterate_pagerank(corpus, damping_factor):
     """
@@ -81,7 +126,37 @@ def iterate_pagerank(corpus, damping_factor):
     their estimated PageRank value (a value between 0 and 1). All
     PageRank values should sum to 1.
     """
-    raise NotImplementedError
+    pr = {}
+
+    pages = list(corpus.keys())
+    all = len(pages)
+    init = 1 / all
+
+    for page in pages:
+        pr[page] = init
+
+    while True:
+        out = True
+
+        for page in pr:
+            last = pr[page]
+            pr[page] = (1 - damping_factor) / all 
+            for parent, pages_set in corpus.items():
+                if page in pages_set:
+                    pr[page] += damping_factor * pr[parent] / len(pages_set)
+            
+            if abs(last - pr[page]) > 0.001:
+                out = False
+
+        if out:
+            return pr
+
+        
+
+
+    
+
+
 
 
 if __name__ == "__main__":
