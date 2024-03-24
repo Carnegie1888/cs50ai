@@ -230,22 +230,22 @@ def normalize(probabilities):
     is normalized (i.e., sums to 1, with relative proportions the same).
     """
     cp = copy.deepcopy(probabilities)
-    for person in cp:
-        gene_sum = sum(probabilities[person]["gene"].values())
-        rate1 = 1 / gene_sum
-        for i in range(3):
-            probabilities[person]["gene"][i] *= rate1
-
-        trait_sum = probabilities[person]["trait"][True] + probabilities[person]["trait"][False]
-        rate2 = 1 / trait_sum
-        for bool in [True, False]:
-            probabilities[person]["trait"][bool] *= rate2
-
     # for person in cp:
-    #     for field in list(probabilities[person].keys()):
-    #         total = sum(probabilities[person][field].values())
-    #         for value in probabilities[person][field]:
-    #             probabilities[person][field][value] /= total
+    #     gene_sum = sum(probabilities[person]["gene"].values())
+    #     rate1 = 1 / gene_sum
+    #     for i in range(3):
+    #         probabilities[person]["gene"][i] *= rate1
+
+    #     trait_sum = probabilities[person]["trait"][True] + probabilities[person]["trait"][False]
+    #     rate2 = 1 / trait_sum
+    #     for bool in [True, False]:
+    #         probabilities[person]["trait"][bool] *= rate2
+
+    for person in cp:
+        for field in list(probabilities[person].keys()):
+            total = sum(probabilities[person][field].values())
+            for value in probabilities[person][field]:
+                probabilities[person][field][value] /= total
 
 if __name__ == "__main__":
     main()
