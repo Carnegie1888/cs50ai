@@ -241,6 +241,11 @@ def normalize(probabilities):
         for bool in [True, False]:
             probabilities[person]["trait"][bool] *= rate2
 
+    # for person in cp:
+    #     for field in list(probabilities[person].keys()):
+    #         total = sum(probabilities[person][field].values())
+    #         for value in probabilities[person][field]:
+    #             probabilities[person][field][value] /= total
 
 if __name__ == "__main__":
     main()
