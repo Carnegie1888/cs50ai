@@ -250,15 +250,8 @@ class MinesweeperAI():
                     new_count = sentence2.count - sentence1.count
 
                     new_sentence = Sentence(new_cells, new_count)
-                    mines = new_sentence.known_mines()
-                    safes = new_sentence.known_safes()
-                    if mines:
-                        for cell in mines:
-                            self.mark_mine(cell)
-                    elif safes:
-                        for cell in safes:
-                            self.mark_safe(cell)
-
+                    self.knowledge.append(new_sentence)
+                    return self.reference1()
                 
 
 
