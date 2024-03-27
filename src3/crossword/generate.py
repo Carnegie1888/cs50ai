@@ -128,6 +128,8 @@ class CrosswordCreator():
             if not ok:
                 self.domains[x].remove(x_word)
                 revised = True
+            else:
+                continue
         return revised
             
 
@@ -149,7 +151,7 @@ class CrosswordCreator():
 
         else:
             queue = arcs
-        queue_copy = queue.copy()
+
         while queue:
             x, y = queue.pop(0)
 
