@@ -1,4 +1,5 @@
 import sys
+import random
 
 from crossword import *
 
@@ -156,8 +157,6 @@ class CrosswordCreator():
 
 
 
-
-
     def assignment_complete(self, assignment):
         """
         Return True if `assignment` is complete (i.e., assigns a value to each
@@ -206,7 +205,9 @@ class CrosswordCreator():
             rule_out[word1] = cnt
         
         rule_out = dict(sorted(rule_out.items(), key=lambda item: item[1]))
-        return rule_out
+
+
+        return list(rule_out.keys())
 
 
 
@@ -218,7 +219,40 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
+        data = {}
+        for var in self.crossword.variables.difference(set(assignment.keys())):
+            remain = len(self.domains[var])
+            degree = len(self.crossword.neighbors(var))
+            data[var] = (remain, degree)
+        
+        def tuple_compare(item):
+            return (item[1][0], -item[1][1])
 
+
+        data = sorted(data.items(), key=tuple_compare)
+
+        choices = [data[0]]
+
+        for key, value in data[1:]:
+            if value == choices[0][1]:
+                choices.append((key, value))
+        
+        return random.choice(choices)[0]
+    
+
+    def inference(self, var):
+        arcs = {}
+        keys = self.crossword.overlaps.keys()
+        self.domains_copy = self.domains
+
+
+        for neighbor in self.crossword.neighbors(var):
+            if (neighbor, var) in keys:
+                arcs[neighbor, var] = self.crossword.overlaps[neighbor, var]
+
+        return self.ac3(arcs)
+
+        
 
 
     def backtrack(self, assignment):
@@ -230,7 +264,28 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        raise NotImplementedError
+        if self.assignment_complete(assignment):
+            return assignment
+        
+        var = self.select_unassigned_variable(assignment)
+        for value in self.order_domain_values(var, assignment):
+            assignment_copy = assignment.copy()
+            assignment[var] = value
+            
+            if self.consistent(assignment):
+                infer = self.inference()
+                if not infer:
+                    self.domain = self.domains_copy
+                result = self.backtrack(assignment)
+                if result:
+                    return result
+                
+            self.domain = self.domains_copy
+            assignment = assignment_copy
+        return False
+                
+
+
 
 
 def main():
