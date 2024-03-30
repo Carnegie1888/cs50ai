@@ -3,6 +3,8 @@ import sys
 
 from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn import svm
+
 
 TEST_SIZE = 0.4
 
@@ -70,26 +72,7 @@ def load_data(filename):
         months = ["Jan", "Feb", "Mar", "Apr", "May", "June", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
         for row in reader:
-            # for i in range(18):
-            #     if i in int_evi:
-            #         evidence[i].append(int(row[i]))
-            #     elif i in float_evi:
-            #         evidence[i].append(float(row[i]))
-            #     elif i == 10:
-            #         evidence[i].append(months.index(row[i]))
-            #     elif i == 15:
-            #         type =  (0 if row[i] == "New_Visitor" else 1)
-            #         evidence[i].append(type)
-            #     elif i == 16:
-            #         weekend = (1 if row[i] == True else 0)
-            #         evidence[i].append(weekend)
-            #     else:
-            #         revenue = (1 if row[i] == True else 0)
-            #         labels.append(revenue)
-            # int_evi = [0, 2, 4, 11, 12, 13, 14]
-            # float_evi = [1, 3, 5, 6, 7, 8, 9, ]
-
-            revenue = (1 if row[-1] == True else 0)
+            revenue = (1 if row[-1] == "TRUE" else 0)
             labels.append(revenue)
 
             evidence.append([
@@ -109,7 +92,7 @@ def load_data(filename):
                 int(row[13]),
                 int(row[14]),
                 0 if row[15] == "New_Visitor" else 1,
-                1 if row[16] == True else 0,
+                1 if row[16] == "TRUE" else 0,
             ])
 
     return (evidence, labels)
